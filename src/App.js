@@ -1,25 +1,34 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import Login from './components/Login';
+import Dashboard from './components/dashboard';
+import { login, handleCallback } from './components/spotifyAuth';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
-function App() {
+const App = () => {
+  const [token, setToken] = useState('');
+
+  useEffect(() => {
+    // Håndter adgangstoken fra URL hash
+    handleCallback();
+    const _token = window.localStorage.getItem('token');
+    setToken(_token);
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+      <Router>
+        <div className="App">
+          <Switch>
+            <Route path="/" exact>
+              {!token ? <Login login={login} /> : <Dashboard token={token} />}
+            </Route>
+            <Route path="/callback">
+              <h1>Redirecting...</h1>
+            </Route>
+          </Switch>
+        </div>
+      </Router>
   );
-}
+};
 
 export default App;
